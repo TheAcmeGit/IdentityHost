@@ -131,6 +131,19 @@ namespace IdentityServer4Demo
                     }
                     context.SaveChanges();
                 }
+                else {
+                    var dbClients = context.Clients.ToArray();
+                    var configClients = Config.Clients;
+                    foreach (var item in configClients)
+                    {
+                        if (!dbClients.Any(f=>f.ClientId==item.ClientId))
+                        {
+                            context.Clients.Add(item.ToEntity());
+                            context.SaveChanges();
+                        }
+                    }
+                   
+                }
 
                 if (!context.IdentityResources.Any())
                 {

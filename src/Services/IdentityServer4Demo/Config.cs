@@ -73,7 +73,25 @@ namespace IdentityServer4Demo
                          "api1",
                          "ApiResourse1",
                      }
-                 }
+                 },
+                  new Client
+                {
+                    ClientId = "js",
+                    ClientName = "JavaScript Client",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RedirectUris = { "http://localhost:7000/CallBack" },
+                    PostLogoutRedirectUris = { "http://localhost:7000 " },
+                    AllowedCorsOrigins = { "http://localhost:7000" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api1"
+                    },
+                }
             };
     }
 }
