@@ -3,6 +3,14 @@
 }
 
 <div class="text-center">
+    <p>    @ViewData["access_token"]</p>
+    <p>    @ViewData["id_token"]</p>
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+@foreach (var item in User.Claims)
+{
+<p>
+    <span>@item.Type</span>--->  <span>@item.Value</span>
+</p>
+}

@@ -63,6 +63,7 @@ namespace IdentityServer4Demo
             })
             .AddDeveloperSigningCredential()
             .AddAspNetIdentity<IdentityUser>()
+            .AddProfileService<MyProfileService>()
             .AddConfigurationStore(options => {
                 options.ConfigureDbContext = conOptions =>
                 {
@@ -77,7 +78,7 @@ namespace IdentityServer4Demo
                     conOptions.UseSqlServer(connStr, sqlOptions => {
                         sqlOptions.MigrationsAssembly(migrationsAssembly);
                     });
-                }; ;
+                }; 
             })
             //.AddProfileService<CustomProfileService>()
             ;
@@ -88,22 +89,26 @@ namespace IdentityServer4Demo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
+            //if (env.IsDevelopment())
+            //{
+                //app.UseDeveloperExceptionPage();
                 InitializeDatabase(app);
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            //    app.UseHsts();
+            //}
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+            });
             app.UseIdentityServer();
             app.UseAuthorization();
 
@@ -133,16 +138,15 @@ namespace IdentityServer4Demo
                 }
                 else {
                     var dbClients = context.Clients.ToArray();
+                    context.Clients.RemoveRange(dbClients);
+                    context.SaveChanges();
                     var configClients = Config.Clients;
                     foreach (var item in configClients)
                     {
-                        if (!dbClients.Any(f=>f.ClientId==item.ClientId))
-                        {
-                            context.Clients.Add(item.ToEntity());
-                            context.SaveChanges();
-                        }
+                        context.Clients.Add(item.ToEntity());
+                        context.SaveChanges();
                     }
-                   
+
                 }
 
                 if (!context.IdentityResources.Any())
